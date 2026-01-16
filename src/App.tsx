@@ -18,23 +18,33 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (click) {
+    if (!click) return
+  
+    setLoading(true)
+  
+    const timer = setTimeout(() => {
       fetch("https://dogapi.dog/api/v2/facts")
-        .then((response) => response.json())
-        .then((data) => {
+        .then(res => res.json())
+        .then(data => {
           setText(data.data[0].attributes.body)
-        }).catch((error) => {
-          setError(error.message)
         })
-      setLoading(false)
-      setClick(false)
-    }
+        .catch(err => {
+          setError(err.message)
+        })
+        .finally(() => {
+          setLoading(false)
+          setClick(false)
+        })
+    }, 1000)
+  
+    return () => clearTimeout(timer)
   }, [click])
+  
 
   return (
-    <div className="justify-center items-center flex min-h-screen bg-black">
+    <div className="justify-center items-center flex min-h-screen bg-black flex-col space-y-5">
       {loading ? (
-        <h1 className="text-xl flex justify-center items-center bg-black">
+        <h1 className="text-6xl flex justify-center items-center bg-black text-white">
           Loading...
         </h1>
       ) : (
